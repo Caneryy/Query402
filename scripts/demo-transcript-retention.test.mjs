@@ -6,7 +6,7 @@ import { describe, it } from "node:test";
 
 const workflow = readFileSync(
   resolve(dirname(fileURLToPath(import.meta.url)), "../.github/workflows/ci.yml"),
-  "utf8",
+  "utf8"
 );
 
 describe("demo transcript artifact retention", () => {
