@@ -1,0 +1,39 @@
+# Workflows
+/.github/workflows/ @emrekayat
+
+# Package manifests
+/package.json @emrekayat
+/package-lock.json @emrekayat
+/apps/api/package.json @emrekayat
+/apps/web/package.json @emrekayat
+/apps/agent-client/package.json @emrekayat
+/packages/shared/package.json @emrekayat
+
+# Payment and x402
+/apps/api/src/lib/x402.ts @emrekayat
+/apps/api/src/lib/payment-debug.ts @emrekayat
+/apps/api/src/lib/payment-evidence.ts @emrekayat
+/apps/api/src/lib/idempotency/x402.ts @emrekayat
+/apps/api/src/lib/facilitator-check.ts @emrekayat
+/apps/web/src/lib/x402.ts @emrekayat
+/packages/shared/src/payment-links.ts @emrekayat
+/scripts/check-payment-leaks.mjs @emrekayat
+
+# Sponsorship
+/apps/api/src/lib/sponsorship/ @emrekayat
+/apps/api/src/routes/sponsorship.ts @emrekayat
+/apps/web/src/lib/sponsorship.ts @emrekayat
+
+# URL safety
+/apps/api/src/lib/scrape-url-safety.ts @emrekayat
+
+# Storage and migrations
+/apps/api/src/lib/storage/ @emrekayat
+/apps/api/src/scripts/migrate-db-json.ts @emrekayat
+
+# Wallets
+/apps/web/src/lib/wallet/ @emrekayat
+
+# Environment and executable configuration
+/.env.example @emrekayat
+/scripts/generate-demo-transcript.sh @emrekayat
