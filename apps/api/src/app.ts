@@ -5,6 +5,7 @@ import { protectedRouter } from "./routes/protected.js";
 import { paidRouter } from "./routes/demo.js";
 import { sponsorshipRouter } from "./routes/sponsorship.js";
 import { createX402Middleware } from "./lib/x402.js";
+import { securityHeaders } from "./lib/security-headers.js";
 import { logger } from "./lib/logger.js";
 import { config } from "./lib/config.js";
 import { UnsafeScrapeUrlError } from "./lib/scrape-url-safety.js";
@@ -13,6 +14,8 @@ import { ProviderTimeoutError, ProviderFailedError } from "./services/query-serv
 import { ProviderCatalogConflictError } from "./lib/pricing.js";
 
 export const app = express();
+
+app.disable("x-powered-by");
 
 const defaultDevelopmentOrigins = [
   "http://localhost:5173",
@@ -50,6 +53,7 @@ app.use(
     exposedHeaders: ["payment-required", "payment-response", "x-payment-response"]
   })
 );
+app.use(securityHeaders());
 app.use(express.json());
 app.use((req, _res, next) => {
   logger.info({ method: req.method, url: req.url }, "incoming request");
