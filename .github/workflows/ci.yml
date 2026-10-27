@@ -129,12 +129,13 @@ jobs:
           fi
           echo "✓ No secrets detected."
 
+      # Reviewers only need the sanitized transcript while the run is still open.
       - name: Upload transcript artifact
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: demo-transcript-${{ github.run_id }}
           path: transcript/
-          retention-days: 90
+          retention-days: 14
           if-no-files-found: error
 
       - name: Stop API
