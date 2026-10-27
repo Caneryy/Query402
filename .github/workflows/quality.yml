@@ -1,11 +1,17 @@
 name: CI / quality
 on: [pull_request, push]
 
+# CI never pushes changes back to the repository.
+permissions:
+  contents: read
+
 jobs:
   quality:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Setup Node
         uses: actions/setup-node@v4
