@@ -44,6 +44,11 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
 
+      - name: Static asset guard
+        run: |
+          node --test scripts/check-static-assets.test.mjs
+          node scripts/check-static-assets.mjs
+
       - name: Install dependencies
         run: npm ci
 
@@ -81,6 +86,9 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: npm
+
+      - name: Static asset guard
+        run: node scripts/check-static-assets.mjs
 
       - name: Install dependencies
         run: npm ci

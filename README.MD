@@ -159,7 +159,10 @@ npm run test
 npm run lint
 npm run format:check
 npm run check:source-artifacts
+node scripts/check-static-assets.mjs
 ```
+
+Static files under the root `public/` directory and each `apps/*/public/` directory have a per-file budget of 1 MB (1,048,576 bytes). CI runs `node scripts/check-static-assets.mjs` before `npm ci` or `pnpm install`. The checker only reads file bytes. It validates PNG, JPEG, WebP, WOFF, and WOFF2 magic bytes against the file extension and prints the path, detected type, and byte size. Two existing logos are on a temporary size allowlist in `scripts/check-static-assets.mjs` until they are shrunk; any other file over 1 MB fails.
 
 Use `npm run clean` before quality gates when you want to remove local build output (`dist`), test coverage (`coverage`), and API runtime data under `apps/api/data`.
 

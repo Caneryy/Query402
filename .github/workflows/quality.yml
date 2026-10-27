@@ -19,6 +19,11 @@ jobs:
           node-version: "20"
           cache: "pnpm"
 
+      - name: Static asset guard
+        run: |
+          node --test scripts/check-static-assets.test.mjs
+          node scripts/check-static-assets.mjs
+
       - name: Enable pnpm
         run: corepack enable
 
