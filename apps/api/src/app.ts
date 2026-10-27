@@ -134,7 +134,7 @@ app.use(
   })
 );
 app.use(securityHeaders());
-app.use(express.json());
+app.use(express.json({ limit: config.API_JSON_BODY_MAX_BYTES }));
 app.use((req, _res, next) => {
   logger.info({ method: req.method, url: req.url }, "incoming request");
   next();
@@ -145,5 +145,49 @@ app.use(sponsorshipRouter);
 app.use(createX402Middleware());
 app.use(protectedRouter);
 app.use(paidRouter);
+
+function isJsonBodyTooLarge(error: unknown): boolean {
+  if (!error || typeof error !== "object") {
+    return false;
+  }
+
+  const candidate = error as {
+    type?: unknown;
+    status?: unknown;
+    statusCode?: unknown;
+    cause?: unknown;
+  };
+
+  if (candidate.type === "entity.too.large") {
+    return true;
+  }
+
+  if (candidate.status === 413 || candidate.statusCode === 413) {
+    return true;
+  }
+
+  if (candidate.cause && candidate.cause !== error) {
+    return isJsonBodyTooLarge(candidate.cause);
+  }
+
+  return false;
+}
+
+// Oversized JSON is rejected before the route runs. Keep the payload out of logs
+// and out of the response; clients branch on errorCode.
+app.use(
+  (error: unknown, _req: express.Request, res: express.Response, next: express.NextFunction) => {
+    if (!isJsonBodyTooLarge(error)) {
+      next(error);
+      return;
+    }
+
+    res.status(413).json({
+      error: "JSON request body exceeds the configured size limit",
+      type: "json_body_too_large",
+      errorCode: "json_body_too_large"
+    });
+  }
+);
 
 app.use(handleApiError);
