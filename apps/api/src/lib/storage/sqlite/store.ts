@@ -69,9 +69,9 @@ export function expectedSchemaVersion(): number {
 }
 
 export function appliedSchemaVersion(database: Database.Database): number {
-  const row = database
-    .prepare(`SELECT MAX(version) AS version FROM schema_migrations`)
-    .get() as { version: number | null };
+  const row = database.prepare(`SELECT MAX(version) AS version FROM schema_migrations`).get() as {
+    version: number | null;
+  };
   return row.version ?? 0;
 }
 
@@ -79,6 +79,13 @@ export function isSchemaCurrent(dbPath: string): boolean {
   const database = getAnalyticsDb(dbPath);
   return appliedSchemaVersion(database) >= expectedSchemaVersion();
 }
+
+/**
+ * Bounded so a brief WAL writer doesn't fail a concurrent transaction with
+ * SQLITE_BUSY immediately; long enough to ride out normal contention
+ * without ever hanging the process indefinitely.
+ */
+const BUSY_TIMEOUT_MS = 5_000;
 
 export function getAnalyticsDb(dbPath: string): Database.Database {
   if (db && activeDbPath === dbPath) {
@@ -99,7 +106,8 @@ export function getAnalyticsDb(dbPath: string): Database.Database {
   try {
     confinedPath = resolveConfinedDataPath(dbPath);
   } catch (error) {
-    initError = error instanceof Error ? error : new Error("Storage path is outside the data directory");
+    initError =
+      error instanceof Error ? error : new Error("Storage path is outside the data directory");
     activeDbPath = dbPath;
     throw initError;
   }
@@ -111,6 +119,7 @@ export function getAnalyticsDb(dbPath: string): Database.Database {
     const database = new Database(confinedPath);
     database.pragma("journal_mode = WAL");
     database.pragma("foreign_keys = ON");
+    database.pragma(`busy_timeout = ${BUSY_TIMEOUT_MS}`);
     try {
       runMigrations(database);
     } catch (error) {
